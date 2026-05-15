@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["es2020"],
+    "strict": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "outDir": "./.prebuild",
+    "skipLibCheck": true
+  },
+  "include": ["parseRuleData.ts"],
+  "exclude": ["node_modules"]
+}

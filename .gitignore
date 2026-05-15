@@ -1,0 +1,19 @@
+# dependencies
+/node_modules
+
+# build
+/.next
+/out
+/.prebuild
+
+# data generated at build time
+/src/data/rules/
+/src/data/newestRules.json
+/src/data/tagSummaries.json
+/public/themes/
+
+# misc
+.DS_Store
+*.pem
+.env*.local
+npm-debug.log*
