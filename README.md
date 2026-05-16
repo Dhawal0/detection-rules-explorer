@@ -1,6 +1,6 @@
 # Multi-SIEM Detection Rules Explorer
 
-A unified web explorer for detection rules across **9 major security platforms**, hosted at [dhawal0.github.io/detection-rules-explorer](https://dhawal0.github.io/detection-rules-explorer).
+A unified web explorer for detection rules across **9 major security platforms**, hosted at [dhawal0.github.io/detection-rules-explorer](https://dhawalshah.cv/detection-rules-explorer).
 
 ## Platforms Covered
 

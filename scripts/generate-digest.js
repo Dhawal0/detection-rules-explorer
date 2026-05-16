@@ -107,7 +107,7 @@ async function main() {
     '| Sumo Logic | [rapdev-io/Threat_Detection_Ruleset-SUMOLOGIC](https://github.com/rapdev-io/Threat_Detection_Ruleset-SUMOLOGIC) |',
     '',
     `---`,
-    `*Explorer: https://dhawal0.github.io/detection-rules-explorer*`,
+    `*Explorer: https://dhawalshah.cv/detection-rules-explorer*`,
   ];
 
   const content = lines.join('\n');
