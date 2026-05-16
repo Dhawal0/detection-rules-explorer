@@ -124,23 +124,31 @@ async function getElasticPrebuiltRules(
   tagSummaries: Map<string, TagSummary>
 ) {
   const gh = githubClient();
-  const releasesUrl = 'https://api.github.com/repos/elastic/detection-rules/releases/latest';
-  const release = await gh.get(releasesUrl);
-  const asset = release.data.assets.find((a: { name: string }) =>
-    a.name.includes('detection-rules-')
-  );
-  if (!asset) { console.log('No Elastic rules tarball found'); return; }
 
-  const tarRes = await axios.get(asset.browser_download_url, { responseType: 'stream' });
+  const commitRes = await gh.get(
+    'https://api.github.com/repos/elastic/detection-rules/commits?path=rules&per_page=1'
+  );
+  const repoUpdatedDate = new Date(commitRes.data[0]?.commit?.committer?.date || Date.now());
+
+  // Download branch tarball directly — releases have no assets in this repo
+  const headers: Record<string, string> = { Accept: 'application/vnd.github.v3+json' };
+  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  const tarRes = await axios.get(
+    'https://api.github.com/repos/elastic/detection-rules/tarball/main',
+    { responseType: 'stream', maxRedirects: 5, headers, timeout: 120000 }
+  );
+
   const parser = new tar.Parser();
   tarRes.data.pipe(parser);
 
   let count = 0;
   parser.on('entry', entry => {
-    if (!entry.path.endsWith('.toml') || !entry.path.includes('/rules/')) {
-      entry.resume();
-      return;
-    }
+    const isRule =
+      entry.path.endsWith('.toml') &&
+      (entry.path.includes('/rules/') || entry.path.includes('/rules_building_block/')) &&
+      !entry.path.includes('/_deprecated/');
+    if (!isRule) { entry.resume(); return; }
+
     let buf = Buffer.alloc(0);
     const contentStream = new PassThrough();
     entry.pipe(contentStream);
@@ -153,12 +161,11 @@ async function getElasticPrebuiltRules(
         if (!r || !r.rule_id) return;
 
         const tags: string[] = (r.tags || []).filter((t: string) => t !== 'Elastic');
-        const threat = r.threat || [];
+        const dateStr = (m?.updated_date || m?.creation_date || '').replace(/\//g, '-');
+        const updatedDate = dateStr ? new Date(dateStr) : repoUpdatedDate;
 
         addRule(
-          r.rule_id, r.name, tags,
-          new Date(m?.updated_date || m?.creation_date || Date.now()),
-          'Elastic',
+          r.rule_id, r.name, tags, updatedDate, 'Elastic',
           { metadata: { ...m, source_siem: 'Elastic', source_siem_id: 'elastic' }, rule: r },
           ruleSummaries, tagSummaries
         );
