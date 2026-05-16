@@ -132,7 +132,7 @@ async function getElasticPrebuiltRules(
   if (!asset) { console.log('No Elastic rules tarball found'); return; }
 
   const tarRes = await axios.get(asset.browser_download_url, { responseType: 'stream' });
-  const parser = new tar.Parse();
+  const parser = new tar.Parser();
   tarRes.data.pipe(parser);
 
   let count = 0;
