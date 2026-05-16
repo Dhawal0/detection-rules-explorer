@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { FunctionComponent, ReactNode } from 'react';
 import { useEuiTheme, transparentize } from '@elastic/eui';
 import { useTheme } from '../theme';
