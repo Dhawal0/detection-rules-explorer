@@ -598,10 +598,10 @@ async function getWazuhRules(
       const content = raw.data as string;
       // Extract rule groups/ids from XML (simple regex approach)
       const groupMatch = content.match(/<group\s+name="([^"]+)"/g);
-      const ruleMatches = content.matchAll(/<rule\s+id="(\d+)"[^>]*level="(\d+)"[^>]*>([\s\S]*?)<\/rule>/g);
-
-      for (const match of ruleMatches) {
-        const [, ruleId, level, body] = match;
+      const ruleRegex = /<rule\s+id="(\d+)"[^>]*level="(\d+)"[^>]*>([\s\S]*?)<\/rule>/g;
+      let match: RegExpExecArray | null;
+      while ((match = ruleRegex.exec(content)) !== null) {
+        const ruleId = match[1], level = match[2], body = match[3];
         const descMatch = body.match(/<description>(.*?)<\/description>/);
         if (!descMatch) continue;
         const name = descMatch[1];
